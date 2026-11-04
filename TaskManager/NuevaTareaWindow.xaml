@@ -1,0 +1,149 @@
+﻿<Window x:Class="TaskManager.NuevaTareaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nueva tarea"
+        Width="500"
+        Height="570"
+        MinWidth="500"
+        MinHeight="570"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#17191F"
+        Foreground="#F1F2F5"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="PanelBrush" Color="#222630"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#9299A8"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#6488F5"/>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#222630"/>
+            <Setter Property="Foreground" Value="#F1F2F5"/>
+            <Setter Property="BorderBrush" Value="#383E4B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CaretBrush" Value="White"/>
+        </Style>
+
+        <Style TargetType="{x:Type DatePickerTextBox}">
+            <Setter Property="Foreground" Value="#F1F2F5"/>
+            <Setter Property="Background" Value="#222630"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
+
+        <Style TargetType="DatePicker">
+            <Setter Property="Background" Value="#222630"/>
+            <Setter Property="Foreground" Value="#F1F2F5"/>
+            <Setter Property="BorderBrush" Value="#383E4B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2B303C"/>
+            <Setter Property="Foreground" Value="#D5D8E0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="18,11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="18,11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ENCABEZADO -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
+            <TextBlock x:Name="TxtEncabezado"
+                Text="Nueva tarea"
+                FontSize="25"
+                FontWeight="SemiBold"/>
+
+            <TextBlock x:Name="TxtSubtitulo"
+                Text="Completá los datos de la actividad."
+                FontSize="12"
+                Foreground="{StaticResource MutedBrush}"
+                Margin="0,7,0,0"/>
+        </StackPanel>
+
+        <!-- FORMULARIO -->
+        <StackPanel Grid.Row="1">
+
+            <TextBlock Text="Título de la tarea"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+
+            <TextBox x:Name="TxtTitulo"
+                     Height="43"
+                     MaxLength="120"
+                     VerticalContentAlignment="Center"/>
+
+            <TextBlock Text="Descripción"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Margin="0,22,0,8"/>
+
+            <TextBox x:Name="TxtDescripcion"
+                     Height="115"
+                     MaxLength="1000"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     VerticalContentAlignment="Top"/>
+
+            <TextBlock Text="Fecha de vencimiento"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Margin="0,22,0,8"/>
+
+            <DatePicker x:Name="FechaVencimiento"
+                        Height="42"
+                        SelectedDate="{x:Null}"
+                        DisplayDateStart="{x:Null}"
+                        VerticalContentAlignment="Center"/>
+
+            <TextBlock Text="Podés dejar la fecha vacía si no tiene vencimiento."
+                       FontSize="11"
+                       Foreground="{StaticResource MutedBrush}"
+                       Margin="0,8,0,0"/>
+
+        </StackPanel>
+
+        <!-- BOTONES -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+
+            <Button Content="Cancelar"
+                    Style="{StaticResource SecondaryButton}"
+                    Margin="0,0,10,0"
+                    Click="BtnCancelar_Click"/>
+
+            <Button x:Name="BtnGuardar"
+                    Content="Guardar tarea"
+                    Style="{StaticResource PrimaryButton}"
+                    Click="BtnGuardar_Click"/>
+
+        </StackPanel>
+    </Grid>
+</Window>
