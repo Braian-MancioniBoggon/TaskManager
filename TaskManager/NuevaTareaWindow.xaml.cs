@@ -2,6 +2,8 @@
 using System;
 using System.Windows;
 
+using MessageBox = System.Windows.MessageBox;
+
 namespace TaskManager
 {
     public partial class NuevaTareaWindow : Window

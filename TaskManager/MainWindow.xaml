@@ -1,4 +1,4 @@
-﻿<Window x:Class="TaskManager.MainWindow"
+<Window x:Class="TaskManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="TaskManager"
@@ -208,15 +208,6 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
 
-                    <Button Content="Probar notificación"
-                            Click="BtnProbarNotificacion_Click"
-                            Padding="14,11"
-                            Margin="0,0,10,0"
-                            Background="#303945"
-                            Foreground="#DCE5FF"
-                            BorderThickness="0"
-                            Cursor="Hand"/>
-
                     <Button x:Name="BtnNuevaTarea"
                             Style="{StaticResource PrimaryButton}"
                             Click="BtnNuevaTarea_Click">
@@ -306,16 +297,40 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
                     <TextBlock x:Name="TxtTituloLista"
+                               Grid.Column="0"
                                Text="Lista de tareas"
                                FontSize="17"
-                               FontWeight="SemiBold"/>
-
-                    <TextBlock Text="Ordenadas por antigüedad"
-                               FontSize="11"
-                               Foreground="{StaticResource MutedBrush}"
-                               HorizontalAlignment="Right"
+                               FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="Ordenadas por antigüedad"
+                                   FontSize="11"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,14,0"/>
+
+                        <Button x:Name="BtnBorrarTodasCompletadas"
+                                Content="Borrar todas"
+                                Click="BtnBorrarTodasCompletadas_Click"
+                                Visibility="Collapsed"
+                                Padding="12,7"
+                                Background="#493039"
+                                Foreground="#FFB4B4"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                FontSize="11"
+                                FontWeight="SemiBold"/>
+                    </StackPanel>
                 </Grid>
 
                 <ScrollViewer Grid.Row="1"
@@ -505,13 +520,52 @@
                                        Margin="0,24,0,9"/>
 
                             <ComboBox x:Name="CmbIntervaloNotificaciones"
-                                      Width="180"
+                                      Width="190"
                                       HorizontalAlignment="Left"
                                       SelectedIndex="1"
                                       Padding="9,7"
                                       Background="#303945"
                                       Foreground="#F1F2F5"
-                                      BorderBrush="#414957">
+                                      BorderBrush="#414957"
+                                      SnapsToDevicePixels="True">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ComboBoxItem}">
+                                        <Setter Property="Foreground" Value="#F1F2F5"/>
+                                        <Setter Property="Background" Value="#222630"/>
+                                        <Setter Property="Padding" Value="9,6"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                                                    <Border x:Name="FondoOpcion"
+                                                            Background="{TemplateBinding Background}"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter
+                                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsHighlighted" Value="True">
+                                                            <Setter TargetName="FondoOpcion"
+                                                                    Property="Background"
+                                                                    Value="#303B59"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="FondoOpcion"
+                                                                    Property="Background"
+                                                                    Value="#303B59"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Foreground" Value="#777F8F"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
 
                                 <ComboBoxItem Content="Cada 15 minutos" Tag="15"/>
                                 <ComboBoxItem Content="Cada 30 minutos" Tag="30"/>
@@ -525,6 +579,35 @@
                                        Foreground="{StaticResource MutedBrush}"
                                        TextWrapping="Wrap"
                                        Margin="0,20,0,0"/>
+
+                        </StackPanel>
+                    </Border>
+
+                    <!-- INICIO CON WINDOWS -->
+                    <Border Background="{StaticResource PanelBrush}"
+                            CornerRadius="12"
+                            Padding="24"
+                            Margin="0,0,0,18">
+
+                        <StackPanel>
+
+                            <TextBlock Text="Inicio de Windows"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"/>
+
+                            <TextBlock Text="Elegí si querés que TaskManager se inicie automáticamente cuando enciendas tu computadora."
+                                       FontSize="12"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,7,0,18"/>
+
+                            <CheckBox x:Name="ChkIniciarConWindows"
+                                      Content="Iniciar TaskManager al iniciar Windows"
+                                      IsChecked="False"
+                                      Foreground="#F1F2F5"
+                                      FontSize="13"
+                                      FontWeight="Medium"
+                                      Cursor="Hand"/>
 
                         </StackPanel>
                     </Border>

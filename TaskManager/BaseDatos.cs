@@ -1,4 +1,3 @@
-﻿
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace TaskManager
                     NotificacionesActivas INTEGER NOT NULL DEFAULT 1,
                     IntervaloMinutos INTEGER NOT NULL DEFAULT 30
                 );
-            
+
                 INSERT OR IGNORE INTO Configuracion
                 (
                     Id,
@@ -165,18 +164,10 @@ namespace TaskManager
                 );
             ";
 
-            comando.Parameters.AddWithValue(
-                "$id", tarea.Id.ToString());
-
-            comando.Parameters.AddWithValue(
-                "$titulo", tarea.Titulo);
-
-            comando.Parameters.AddWithValue(
-                "$descripcion", tarea.Descripcion);
-
-            comando.Parameters.AddWithValue(
-                "$fechaCreacion",
-                tarea.FechaCreacion.ToString("O"));
+            comando.Parameters.AddWithValue("$id", tarea.Id.ToString());
+            comando.Parameters.AddWithValue("$titulo", tarea.Titulo);
+            comando.Parameters.AddWithValue("$descripcion", tarea.Descripcion);
+            comando.Parameters.AddWithValue("$fechaCreacion", tarea.FechaCreacion.ToString("O"));
 
             comando.Parameters.AddWithValue(
                 "$fechaVencimiento",
@@ -213,11 +204,8 @@ namespace TaskManager
                 WHERE Id = $id;
             ";
 
-            comando.Parameters.AddWithValue(
-                "$id", id.ToString());
-
-            comando.Parameters.AddWithValue(
-                "$fecha", DateTime.Now.ToString("O"));
+            comando.Parameters.AddWithValue("$id", id.ToString());
+            comando.Parameters.AddWithValue("$fecha", DateTime.Now.ToString("O"));
 
             int filas = comando.ExecuteNonQuery();
 
@@ -225,9 +213,8 @@ namespace TaskManager
                 throw new Exception("No se encontró la tarea que se quería completar.");
         }
 
-
-// ACTUALIZAR TAREA
-public static void ActualizarTarea(Tarea tarea)
+        // ACTUALIZAR TAREA
+        public static void ActualizarTarea(Tarea tarea)
         {
             using var conexion = new SqliteConnection(CadenaConexion);
 
@@ -236,13 +223,13 @@ public static void ActualizarTarea(Tarea tarea)
             using var comando = conexion.CreateCommand();
 
             comando.CommandText = @"
-        UPDATE Tareas
-        SET
-            Titulo = $titulo,
-            Descripcion = $descripcion,
-            FechaVencimiento = $fechaVencimiento
-        WHERE Id = $id;
-    ";
+                UPDATE Tareas
+                SET
+                    Titulo = $titulo,
+                    Descripcion = $descripcion,
+                    FechaVencimiento = $fechaVencimiento
+                WHERE Id = $id;
+            ";
 
             comando.Parameters.AddWithValue("$id", tarea.Id.ToString());
             comando.Parameters.AddWithValue("$titulo", tarea.Titulo);
@@ -260,7 +247,7 @@ public static void ActualizarTarea(Tarea tarea)
                 throw new Exception("No se encontró la tarea que se quería actualizar.");
         }
 
-        // ELIMINAR TAREA
+        // ELIMINAR UNA TAREA
         public static void EliminarTarea(Guid id)
         {
             using var conexion = new SqliteConnection(CadenaConexion);
@@ -270,9 +257,9 @@ public static void ActualizarTarea(Tarea tarea)
             using var comando = conexion.CreateCommand();
 
             comando.CommandText = @"
-        DELETE FROM Tareas
-        WHERE Id = $id;
-    ";
+                DELETE FROM Tareas
+                WHERE Id = $id;
+            ";
 
             comando.Parameters.AddWithValue("$id", id.ToString());
 
@@ -282,6 +269,22 @@ public static void ActualizarTarea(Tarea tarea)
                 throw new Exception("No se encontró la tarea que se quería eliminar.");
         }
 
+        // ELIMINAR TODAS LAS TAREAS COMPLETADAS
+        public static void EliminarTodasLasCompletadas()
+        {
+            using var conexion = new SqliteConnection(CadenaConexion);
+
+            conexion.Open();
+
+            using var comando = conexion.CreateCommand();
+
+            comando.CommandText = @"
+                DELETE FROM Tareas
+                WHERE Completada = 1;
+            ";
+
+            comando.ExecuteNonQuery();
+        }
 
         // OBTENER CONFIGURACIÓN
         public static (bool NotificacionesActivas, int IntervaloMinutos)
@@ -348,7 +351,5 @@ public static void ActualizarTarea(Tarea tarea)
 
             comando.ExecuteNonQuery();
         }
-
-
     }
 }

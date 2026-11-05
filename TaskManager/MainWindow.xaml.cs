@@ -1,11 +1,22 @@
-﻿
+
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+
+using Button = System.Windows.Controls.Button;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using MessageBox = System.Windows.MessageBox;
+
+using NotifyIcon = System.Windows.Forms.NotifyIcon;
+using ContextMenuStrip = System.Windows.Forms.ContextMenuStrip;
+using ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem;
 
 namespace TaskManager
 {
@@ -19,8 +30,17 @@ namespace TaskManager
             Interval = TimeSpan.FromMinutes(30)
         };
 
+        private NotifyIcon? _iconoBandeja;
+        private ContextMenuStrip? _menuBandeja;
+
+        private bool _salidaDefinitiva = false;
         private bool _mostrarCompletadas = false;
         private bool _notificacionesActivas = true;
+
+        private const string ClaveInicioWindows =
+            @"Software\Microsoft\Windows\CurrentVersion\Run";
+
+        private const string NombreValorInicioWindows = "TaskManager";
 
         public MainWindow()
         {
@@ -46,6 +66,20 @@ namespace TaskManager
                 MostrarPendientes();
 
                 ActualizarContadores();
+
+                // INICIALIZAR ICONO DE LA BANDEJA
+                InicializarBandeja();
+
+                // SI WINDOWS INICIÓ LA APLICACIÓN, OCULTAR LA VENTANA
+                if (Array.Exists(
+                    Environment.GetCommandLineArgs(),
+                    argumento => string.Equals(
+                        argumento,
+                        "--background",
+                        StringComparison.OrdinalIgnoreCase)))
+                {
+                    Loaded += (_, _) => Hide();
+                }
             }
             catch (Exception ex)
             {
@@ -55,8 +89,114 @@ namespace TaskManager
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
+                _salidaDefinitiva = true;
                 Close();
             }
+        }
+
+        // CONSULTAR SI TASKMANAGER ESTÁ CONFIGURADO PARA INICIAR CON WINDOWS
+        private bool EstaConfiguradoInicioWindows()
+        {
+            using var clave = Registry.CurrentUser.OpenSubKey(
+                ClaveInicioWindows,
+                false);
+
+            return clave?.GetValue(NombreValorInicioWindows) != null;
+        }
+
+        // ACTIVAR O DESACTIVAR EL INICIO CON WINDOWS
+        private void ConfigurarInicioWindows(bool activar)
+        {
+            using var clave = Registry.CurrentUser.CreateSubKey(
+                ClaveInicioWindows);
+
+            if (clave == null)
+            {
+                throw new InvalidOperationException(
+                    "No se pudo acceder al Registro de Windows.");
+            }
+
+            if (activar)
+            {
+                string? ruta = Environment.ProcessPath;
+
+                if (string.IsNullOrWhiteSpace(ruta))
+                {
+                    throw new InvalidOperationException(
+                        "No se pudo obtener la ruta del ejecutable.");
+                }
+
+                clave.SetValue(
+                    NombreValorInicioWindows,
+                    $"\"{ruta}\" --background");
+            }
+            else
+            {
+                clave.DeleteValue(
+                    NombreValorInicioWindows,
+                    false);
+            }
+        }
+
+        // INICIALIZAR BANDEJA DE WINDOWS
+        private void InicializarBandeja()
+        {
+            _menuBandeja = new ContextMenuStrip();
+
+            var opcionAbrir = new ToolStripMenuItem("Abrir TaskManager");
+            opcionAbrir.Click += (_, _) => MostrarVentana();
+
+            var opcionSalir = new ToolStripMenuItem("Salir");
+            opcionSalir.Click += (_, _) => SalirDefinitivamente();
+
+            _menuBandeja.Items.Add(opcionAbrir);
+            _menuBandeja.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+            _menuBandeja.Items.Add(opcionSalir);
+
+            _iconoBandeja = new NotifyIcon
+            {
+                Icon = System.Drawing.SystemIcons.Application,
+                Text = "TaskManager",
+                ContextMenuStrip = _menuBandeja,
+                Visible = true
+            };
+
+            _iconoBandeja.DoubleClick += (_, _) => MostrarVentana();
+        }
+
+        // MOSTRAR VENTANA DESDE LA BANDEJA
+        private void MostrarVentana()
+        {
+            Show();
+
+            WindowState = WindowState.Normal;
+
+            ShowInTaskbar = true;
+
+            Activate();
+
+            Topmost = true;
+            Topmost = false;
+
+            Focus();
+        }
+
+        // CERRAR DEFINITIVAMENTE LA APLICACIÓN
+        private void SalirDefinitivamente()
+        {
+            _salidaDefinitiva = true;
+
+            if (_iconoBandeja != null)
+            {
+                _iconoBandeja.Visible = false;
+                _iconoBandeja.Dispose();
+                _iconoBandeja = null;
+            }
+
+            _menuBandeja?.Dispose();
+            _menuBandeja = null;
+
+            Close();
         }
 
         // TEMPORIZADOR DE NOTIFICACIONES
@@ -96,23 +236,6 @@ namespace TaskManager
             else
             {
                 _temporizador.Stop();
-            }
-        }
-
-        // PROBAR NOTIFICACIONES
-        private void BtnProbarNotificacion_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ServicioNotificaciones.MostrarNotificacionPrueba();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "No se pudo mostrar la notificación:\n\n" + ex.Message,
-                    "TaskManager",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
             }
         }
 
@@ -173,6 +296,8 @@ namespace TaskManager
 
             TxtTituloLista.Text = "Lista de tareas";
 
+            BtnBorrarTodasCompletadas.Visibility = Visibility.Collapsed;
+
             TxtListaVacia.Text = "¡No tenés tareas pendientes!";
 
             TxtListaVacia.Visibility = _pendientes.Count == 0
@@ -189,11 +314,52 @@ namespace TaskManager
 
             TxtTituloLista.Text = "Historial de tareas";
 
+            BtnBorrarTodasCompletadas.Visibility = _completadas.Count > 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             TxtListaVacia.Text = "Todavía no completaste ninguna tarea.";
 
             TxtListaVacia.Visibility = _completadas.Count == 0
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+
+        // BORRAR TODAS LAS TAREAS COMPLETADAS
+        private void BtnBorrarTodasCompletadas_Click(object sender, RoutedEventArgs e)
+        {
+            if (_completadas.Count == 0)
+                return;
+
+            int cantidad = _completadas.Count;
+
+            var resultado = MessageBox.Show(
+                $"¿Estás seguro de que querés eliminar las {cantidad} tareas completadas?\n\n" +
+                "Esta acción no se puede deshacer. Las tareas pendientes no se modificarán.",
+                "Borrar historial de tareas",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (resultado != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                BaseDatos.EliminarTodasLasCompletadas();
+
+                _completadas.Clear();
+
+                ActualizarContadores();
+                MostrarCompletadas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"No se pudieron eliminar las tareas completadas.\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         // ACTUALIZAR CONTADORES
@@ -450,6 +616,9 @@ namespace TaskManager
                 }
             }
 
+            ChkIniciarConWindows.IsChecked =
+                EstaConfiguradoInicioWindows();
+
             TxtEstadoConfiguracion.Text = "";
         }
 
@@ -481,6 +650,12 @@ namespace TaskManager
                     notificacionesActivas,
                     intervalo);
 
+                // CONFIGURAR INICIO CON WINDOWS
+                bool iniciarConWindows =
+                    ChkIniciarConWindows.IsChecked == true;
+
+                ConfigurarInicioWindows(iniciarConWindows);
+
                 // ACTUALIZAR PREFERENCIAS EN MEMORIA
                 _notificacionesActivas = notificacionesActivas;
 
@@ -506,9 +681,34 @@ namespace TaskManager
             }
         }
 
+        // OCULTAR VENTANA AL CERRAR CON LA X
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (!_salidaDefinitiva)
+            {
+                e.Cancel = true;
+                Hide();
+                return;
+            }
+
+            base.OnClosing(e);
+        }
+
+        // LIMPIAR RECURSOS AL CERRAR DEFINITIVAMENTE
         protected override void OnClosed(EventArgs e)
         {
             _temporizador.Stop();
+
+            if (_iconoBandeja != null)
+            {
+                _iconoBandeja.Visible = false;
+                _iconoBandeja.Dispose();
+                _iconoBandeja = null;
+            }
+
+            _menuBandeja?.Dispose();
+            _menuBandeja = null;
+
             base.OnClosed(e);
         }
     }

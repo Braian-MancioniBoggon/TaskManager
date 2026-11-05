@@ -1,12 +1,12 @@
-﻿
-using System.Windows;
+﻿using System;
+using WpfApplication = System.Windows.Application;
 using Microsoft.Windows.AppNotifications;
 
 namespace TaskManager;
 
-public partial class App : Application
+public partial class App : WpfApplication
 {
-    protected override void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(System.Windows.StartupEventArgs e)
     {
         base.OnStartup(e);
 
@@ -16,16 +16,16 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "No se pudieron inicializar las notificaciones de Windows:\n\n" + ex.Message,
                 "TaskManager",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning
             );
         }
     }
 
-    protected override void OnExit(ExitEventArgs e)
+    protected override void OnExit(System.Windows.ExitEventArgs e)
     {
         try
         {
