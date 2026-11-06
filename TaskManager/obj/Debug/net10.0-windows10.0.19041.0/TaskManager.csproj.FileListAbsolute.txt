@@ -112,3 +112,5 @@ C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\obj\Debug\net10.0-windows1
 C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\obj\Debug\net10.0-windows10.0.19041.0\qualifiers.txt
 C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\obj\Debug\net10.0-windows10.0.19041.0\qualifiers.txt.intermediate
 C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\obj\Debug\net10.0-windows10.0.19041.0\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\bin\Debug\net10.0-windows10.0.19041.0\Assets\NoSeMeOlvida.ico
+C:\Users\Braian\Documents\GIT\TaskManager\TaskManager\obj\Debug\net10.0-windows10.0.19041.0\TaskManager_Content.g.cs

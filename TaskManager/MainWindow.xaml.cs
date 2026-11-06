@@ -40,7 +40,7 @@ namespace TaskManager
         private const string ClaveInicioWindows =
             @"Software\Microsoft\Windows\CurrentVersion\Run";
 
-        private const string NombreValorInicioWindows = "TaskManager";
+        private const string NombreValorInicioWindows = "NoSeMeOlvida";
 
         public MainWindow()
         {
@@ -143,7 +143,7 @@ namespace TaskManager
         {
             _menuBandeja = new ContextMenuStrip();
 
-            var opcionAbrir = new ToolStripMenuItem("Abrir TaskManager");
+            var opcionAbrir = new ToolStripMenuItem("Abrir NoSeMeOlvida");
             opcionAbrir.Click += (_, _) => MostrarVentana();
 
             var opcionSalir = new ToolStripMenuItem("Salir");
@@ -155,8 +155,14 @@ namespace TaskManager
 
             _iconoBandeja = new NotifyIcon
             {
-                Icon = System.Drawing.SystemIcons.Application,
-                Text = "TaskManager",
+                Icon = new System.Drawing.Icon(
+                    System.IO.Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "Assets",
+                        "NoSeMeOlvida.ico"
+                    )
+                ),
+                Text = "NoSeMeOlvida",
                 ContextMenuStrip = _menuBandeja,
                 Visible = true
             };
@@ -413,7 +419,7 @@ namespace TaskManager
             TxtTitulo.Text = "Configuración";
 
             TxtSubtitulo.Text =
-                "Personalizá el funcionamiento de TaskManager.";
+                "Personalizá el funcionamiento de NoSeMeOlvida.";
 
             PanelAccionesEncabezado.Visibility = Visibility.Collapsed;
             PanelResumen.Visibility = Visibility.Collapsed;

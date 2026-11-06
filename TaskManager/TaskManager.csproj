@@ -8,11 +8,22 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WindowsPackageType>None</WindowsPackageType>
+		<ApplicationIcon>Assets\NoSeMeOlvida.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Remove="Assets\NoSeMeOlvida.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
 	  <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.4" />
+	  <Content Include="Assets\NoSeMeOlvida.ico">
+	  	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+		<Resource Include="Assets\NoSeMeOlvida.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
 	</ItemGroup>
 
 </Project>

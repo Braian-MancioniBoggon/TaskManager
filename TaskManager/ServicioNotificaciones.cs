@@ -9,7 +9,7 @@ public static class ServicioNotificaciones
     public static void MostrarNotificacion(string titulo, string mensaje)
     {
         var notificacion = new AppNotificationBuilder()
-            .AddText(titulo)
+            .AddText("NoSeMeOlvida")
             .AddText(mensaje)
             .BuildNotification();
 
@@ -19,7 +19,7 @@ public static class ServicioNotificaciones
     public static void MostrarNotificacionPrueba()
     {
         MostrarNotificacion(
-            "TaskManager",
+            "NoSeMeOlvida",
             "Las notificaciones están funcionando correctamente."
         );
     }

@@ -18,7 +18,7 @@ public partial class App : WpfApplication
         {
             System.Windows.MessageBox.Show(
                 "No se pudieron inicializar las notificaciones de Windows:\n\n" + ex.Message,
-                "TaskManager",
+                "NoSeMeOlvida",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Warning
             );

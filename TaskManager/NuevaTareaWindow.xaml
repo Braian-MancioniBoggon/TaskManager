@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Nueva tarea"
         Width="500"
-        Height="570"
+        Height="580"
         MinWidth="500"
-        MinHeight="570"
+        MinHeight="580"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="#17191F"
@@ -124,7 +124,7 @@
             <TextBlock Text="Podés dejar la fecha vacía si no tiene vencimiento."
                        FontSize="11"
                        Foreground="{StaticResource MutedBrush}"
-                       Margin="0,8,0,0"/>
+                       Margin="0,8,0,8"/>
 
         </StackPanel>
 
